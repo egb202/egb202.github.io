@@ -1,4 +1,11 @@
-# 1.3. Using the QUTy Development Board
+---
+layout: default
+title: QUTy Development Board
+parent: Setup
+nav_order: 3
+---
+
+# QUTy Development Board
 
 The QUTy Development Board is a circuit board fitted with the Microchip
 ATtiny1626 AVR microcontroller. This board supports two modes through

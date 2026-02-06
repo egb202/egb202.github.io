@@ -1,4 +1,10 @@
-# 3. Common Errors
+---
+layout: default
+title: Troubleshooting
+nav_order: 4
+---
+
+# Troubleshooting Common Errors
 
 ## PlatformIO Errors
 

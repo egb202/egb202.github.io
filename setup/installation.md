@@ -1,4 +1,11 @@
-# 1.1. Installation
+---
+layout: default
+title: Installation
+parent: Setup
+nav_order: 1
+---
+
+# Installation
 
 To setup VSCode for development on the QUTy Microcontroller board,
 follow the installation steps found on the [QUTy Development Board](https://egb202.github.io/quty/) website.
@@ -12,7 +19,7 @@ To verify that the QUTy platform has been installed correctly, navigate
 to the PlatformIO Platforms tab, and ensure that the QUTy platform is
 listed.
 
-![PlatformIO Platforms](images/platformio-platforms.png)
+![PlatformIO Platforms](/assets/images/platformio-platforms.png)
 
 ## Verifying Driver Installation
 
@@ -24,7 +31,7 @@ CP210x USB to UART Bridge" is listed.
 The specific PORT name may vary depending on the host machine and the
 number of devices connected.
 
-![PlatformIO Devices](images/devices.png)
+![PlatformIO Devices](/assets/images/devices.png)
 
 ## Opening a Project
 
@@ -35,7 +42,7 @@ compatability. To access these examples, click on the QUTy platform and
 open the Examples tab. Select the desired example and click on the
 Import button to clone the project to the local machine.
 
-![PlatformIO Examples](images/platformio-examples.png)
+![PlatformIO Examples](/assets/images/platformio-examples.png)
 
 ### Opening an Existing Project
 
@@ -59,11 +66,11 @@ project root/
 To open this project correctly in VSCode, select **Open Folder** and
 navigate to the **root directory** of the project.
 
-![Open Folder](images/open-folder.png)
+![Open Folder](/assets/images/open-folder.png)
 
 The explorer view should now display the project structure as shown below:
 
-![Explorer View](images/explorer-view.png)
+![Explorer View](/assets/images/explorer-view.png)
 
 ## PlatformIO Toolbar
 
@@ -72,7 +79,7 @@ build flags required for compilation when it detects the
 `platformio.ini` file in the workspace root. This will reveal the
 following toolbar on the top-right corner of the VSCode window:
 
-![PlatformIO Toolbar](images/toolbar.png)
+![PlatformIO Toolbar](/assets/images/toolbar.png)
 
 These options perform the following actions:
 

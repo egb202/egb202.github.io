@@ -1,4 +1,11 @@
-# 1.2. Using Gradescope
+---
+layout: default
+title: Gradescope
+parent: Setup
+nav_order: 2
+---
+
+# Gradescope
 
 Upon completion of a programming assignment, all source code must be
 uploaded to Gradescope for automated grading.

@@ -1,4 +1,11 @@
-# 2.3. C
+---
+layout: default
+title: C
+parent: Reference
+nav_order: 3
+---
+
+# C
 
 ## Pointers
 

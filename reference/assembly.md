@@ -1,4 +1,11 @@
-# 2.2. Assembly
+---
+layout: default
+title: Assembly
+parent: Reference
+nav_order: 2
+---
+
+# Assembly
 
 ## Registers
 

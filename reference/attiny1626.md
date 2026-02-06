@@ -1,4 +1,11 @@
-# 2.1. ATtiny1626
+---
+layout: default
+title: ATtiny1626
+parent: Reference
+nav_order: 1
+---
+
+# ATtiny1626
 
 ## PORT vs VPORT
 

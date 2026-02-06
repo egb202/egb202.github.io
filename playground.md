@@ -1,4 +1,10 @@
-# 4. QUTy Playground
+---
+layout: default
+title: Playground
+nav_order: 5
+---
+
+# Playground
 
 In addition to compiling code, the QUTy playground allows users to
 provide their own emulator events and arguments.

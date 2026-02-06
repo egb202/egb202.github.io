@@ -1,0 +1,25 @@
+title: EGB202
+description: Microprocessors and Digital Systems
+url: https://egb202.github.io
+
+theme: just-the-docs
+color_scheme: light
+
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+
+nav_external_links:
+  - title: ATtiny1626 Data Sheet
+    url: https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATtiny1624-26-27-DataSheet-DS40002234B.pdf
+  - title: AVR Instruction Set Manual
+    url: https://ww1.microchip.com/downloads/en/DeviceDoc/AVR-InstructionSet-Manual-DS40002198.pdf
+
+footer_content: "EGB202 - Microprocessors and Digital Systems. Made by Tarang Janawalkar."
+
+aux_links:
+  "QUT Canvas":
+    - "https://canvas.qut.edu.au"
