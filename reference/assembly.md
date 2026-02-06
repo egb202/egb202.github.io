@@ -6,19 +6,28 @@ nav_order: 2
 ---
 
 # Assembly
+{: .no_toc }
+
+## Table of Contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Registers
 
 Registers can be used as operands in instructions. For example:
 
-```avrasm
+```asmatmel
 ldi r16, 0x10
 ```
 
 stores the value `0x10` into register `r16`. The `r` prefix is case-insensitive,
 and may also be omitted. For example, the following are equivalent:
 
-```avrasm
+```asmatmel
 ldi r16, 0x10
 ldi R16, 0x10
 ldi 16, 0x10
@@ -31,7 +40,7 @@ In the following code, the operand representing the register is
 ambiguous, and one might incorrectly assume that the syntax for the
 `ldi` instruction is `ldi K, Rd`, rather than `ldi Rd, K`.
 
-```avrasm
+```asmatmel
 ldi 16, 16
 ```
 
@@ -39,7 +48,7 @@ ldi 16, 16
 
 Constants are used in instructions as operands. For example:
 
-```avrasm
+```asmatmel
 ldi r16, 0x10
 ```
 
@@ -55,7 +64,7 @@ instructions OP code.
 In the case of some instructions, immediate values can be omitted if
 they appear as the second operand in an instruction. For example:
 
-```avrasm
+```asmatmel
 ldi r16,
 ```
 
@@ -69,7 +78,7 @@ A label is a symbolic name that represents the current value of the
 program counter. Labels must be unique within a program, and end with a
 colon (`:`):
 
-```avrasm
+```asmatmel
 label:
 ```
 
@@ -112,7 +121,7 @@ an encoded representation of the OP codes in hexadecimal format.
 
 Consider the following program:
 
-```avrasm
+```asmatmel
 ; src/main.S
 .section .init0
 
@@ -121,7 +130,7 @@ ldi r16, 0xAB
 
 This instruction is encoded as follows:
 
-```avrasm
+```asmatmel
 ldi Rd, K; 16 <= d <= 31; 0 <= K <= 255
 
        KKKK dddd KKKK

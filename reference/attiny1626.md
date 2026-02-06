@@ -6,6 +6,15 @@ nav_order: 1
 ---
 
 # ATtiny1626
+{: .no_toc }
+
+## Table of Contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## PORT vs VPORT
 
@@ -64,7 +73,7 @@ For a list of all available registers see:
 Each of the following examples are functionally equivalent, but require
 different numbers of CPU cycles to execute.
 
-```avrasm
+```asmatmel
 /* Reading from VPORTA.IN */
 
 in r16, VPORTA_IN
@@ -139,7 +148,7 @@ Sets pins 3 and 5, and clears all other pins.
 
 **Assembly code:**
 
-```avrasm
+```asmatmel
 ldi r16, 0b00101000
 sts PORTA_OUT, r16
 ```
@@ -179,7 +188,7 @@ Sets pins 3 and 5, and does not modify the state of any other pins.
 
 **Assembly code:**
 
-```avrasm
+```asmatmel
 ldi r16, 0b00101000
 sts PORTA_OUTSET, r16
 
@@ -211,7 +220,7 @@ Clears pins 3 and 5, and does not modify the state of any other pins.
 
 **Assembly code:**
 
-```avrasm
+```asmatmel
 ldi r16, 0b00101000
 sts PORTA_OUTCLR, r16
 
@@ -245,7 +254,7 @@ Toggles pins 3 and 5, and does not modify the state of any other pins.
 
 **Assembly code:**
 
-```avrasm
+```asmatmel
 ldi r16, 0b00101000
 sts PORTA_OUTTGL, r16
 

@@ -12,13 +12,24 @@ search:
   preview_words_before: 5
   preview_words_after: 10
 
+latex: katex
+
+compress_html:
+  blanklines: true
+
+markdown: kramdown
+kramdown:
+  syntax_highlighter: none
+
 nav_external_links:
+  - title: QUTy Schematic
+    url: /assets/QUTy-V01_Schematic.pdf
   - title: ATtiny1626 Data Sheet
     url: https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATtiny1624-26-27-DataSheet-DS40002234B.pdf
   - title: AVR Instruction Set Manual
     url: https://ww1.microchip.com/downloads/en/DeviceDoc/AVR-InstructionSet-Manual-DS40002198.pdf
 
-footer_content: "EGB202 - Microprocessors and Digital Systems. Made by Tarang Janawalkar."
+footer_content: "Made by Tarang Janawalkar."
 
 aux_links:
   "QUT Canvas":

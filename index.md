@@ -2,11 +2,11 @@
 layout: home
 title: Home
 nav_order: 1
-description: "Resources for EGB202 Microprocessors and Digital Systems"
+description: "EGB202 Microprocessors and Digital Systems"
 permalink: /
 ---
 
-# Microprocessors and Digital Systems
+# EGB202 Microprocessors and Digital Systems
 
-This repository provides supporting information for the unit EGB202
-Microprocessors and Digital Systems.
+Use the navigation menu on the left to access installation instructions
+for the QUTy platform, reference guides, and datasheets.

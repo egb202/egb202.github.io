@@ -1,10 +1,19 @@
 ---
 layout: default
 title: Troubleshooting
-nav_order: 4
+nav_order: 7
 ---
 
 # Troubleshooting Common Errors
+{: .no_toc }
+
+## Table of Contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## PlatformIO Errors
 
@@ -62,7 +71,7 @@ machine, and that the QUTy board is connected to a USB port.
 Windows users should download the "CP210x VCP Windows" driver from
 [Silicon Labs - CP210x VCP Windows](https://www.silabs.com/documents/public/software/CP210x_VCP_Windows.zip).
 
-## UPDI Initialisation Failed
+### UPDI Initialisation Failed
 
 This error occurs when the UPDI interface is unable to communicate with
 the ATtiny1626.
@@ -85,7 +94,7 @@ pymcuprog.pymcuprog - ERROR - Operation failed with PymcuprogSerialUpdiError: UP
 
 **Solution:**
 
-Ensure that the QUTy board is in programming mode (see [Programming through UPDI](1_3_quty.md#programming-through-updi)).
+Ensure that the QUTy board is in programming mode (see [Programming through UPDI](programming.md#programming-through-updi)).
 
 If the error persists, ensure that the VCP drivers have been correctly
 installed on the host machine.
@@ -99,7 +108,7 @@ operand.
 
 **Code to reproduce:**
 
-```avrasm
+```asmatmel
 ; src/main.S
 .section .init0
 

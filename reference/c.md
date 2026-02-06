@@ -1,11 +1,20 @@
 ---
 layout: default
-title: C
+title: C Programming
 parent: Reference
 nav_order: 3
 ---
 
-# C
+# C Programming
+{: .no_toc }
+
+## Table of Contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Pointers
 
@@ -146,8 +155,8 @@ and will result in the following error:
 error: incompatible integer to pointer conversion initializing 'int16_t *' with an expression of type 'int'
 ```
 
-This can be resolved by casting the integer to a pointer before assignment, 
-to: 
+This can be resolved by casting the integer to a pointer before assignment,
+to:
 
 1. convert the data to the correct data type, and
 2. inform the compiler that this assignment is indeed intentional.
