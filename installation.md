@@ -179,7 +179,7 @@ To confirm that the installation was successful:
 pio pkg list --global
 ```
 
-### Building and Uploading (CLI)
+### Building and Uploading
 
 1. Create a `platformio.ini` file in the root directory of your project:
 
