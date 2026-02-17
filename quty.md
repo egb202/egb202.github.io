@@ -23,4 +23,4 @@ _EGB202 Microprocessors and Digital Systems_.
 - 2-digit, 7-segment LED display
 - Expansion header for socketing into a breadboard
 
-For further detail, refer to the [QUTy schematic](/assets/QUTy Schematic.pdf).
+For further detail, refer to the [QUTy schematic](/assets/QUTy-V01_Schematic.pdf).
