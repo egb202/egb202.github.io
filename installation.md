@@ -60,12 +60,11 @@ to **Platforms** and ensure that the QUTy platform is listed.
 ## Verifying Driver Installation
 
 To verify that the QUTy board is able to interface with a host machine,
-connect the device using a USB cable. Then navigate to the PlatformIO
-Devices tab, and ensure a device with the description "Silicon Labs
-CP210x USB to UART Bridge" is listed.
+navigate to the PlatformIO Devices tab, and connect the device using a
+USB cable. A new device should be listed.
 
-The specific PORT name may vary depending on the host machine and the
-number of devices connected.
+The specific PORT name and description may vary depending on the host
+machine and the number of devices connected.
 
 ![PlatformIO Devices](/assets/images/devices.png)
 
