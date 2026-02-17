@@ -23,7 +23,7 @@ kramdown:
 
 nav_external_links:
   - title: QUTy Schematic
-    url: /assets/QUTy-V01_Schematic.pdf
+    url: /assets/QUTy Schematic.pdf
   - title: ATtiny1626 Data Sheet
     url: https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATtiny1624-26-27-DataSheet-DS40002234B.pdf
   - title: AVR Instruction Set Manual
