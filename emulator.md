@@ -26,8 +26,8 @@ events and arguments.
 Use the following ZIP files to test the AVR Emulator with custom events
 and arguments.
 
-- [**Assembly Project**](https://github.com/egb202/egb202.github.io/raw/main/assembly.zip)
-- [**C Project**](https://github.com/egb202/egb202.github.io/raw/main/c.zip)
+- [**Assembly Project**](/assets/templates/assembly.zip)
+- [**C Project**](/assets/templates/c.zip)
 
 ## Events
 
