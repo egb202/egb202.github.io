@@ -28,6 +28,13 @@ which is available for Windows, macOS, and Linux.
 2. Install [Visual Studio Code](https://code.visualstudio.com/download).
 3. Install the [PlatformIO IDE extension](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide) for VSCode.
 
+{: .note-title}
+> Windows Users
+>
+> Install the [Silicon Labs CP210x Virtual COM Port (VCP) drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) 
+> to enable communication with the QUTy. Select "CP210x VCP Windows"
+> for executable installation.
+
 ## Installing the QUTy Platform
 
 1. Open the **PlatformIO Home** tab in VSCode.
@@ -43,12 +50,6 @@ which is available for Windows, macOS, and Linux.
 
    If VSCode was running during the installation of Git, you may need
    to restart VSCode first.
-
-## Serial Communication Drivers
-
-Communicating with the QUTy may require
-[Silicon Labs CP210x Virtual COM Port (VCP) drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
-to be installed on your system.
 
 ## Verifying Installation
 
