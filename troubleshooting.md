@@ -68,9 +68,6 @@ For some development platforms it can be a USB flash drive (i.e. /media/<user>/<
 Ensure that the VCP drivers have been correctly installed on the host
 machine, and that the QUTy board is connected to a USB port.
 
-Windows users should download the "CP210x VCP Windows" driver from
-[Silicon Labs - CP210x VCP Windows](https://www.silabs.com/documents/public/software/CP210x_VCP_Windows.zip).
-
 ### UPDI Initialisation Failed
 
 This error occurs when the UPDI interface is unable to communicate with

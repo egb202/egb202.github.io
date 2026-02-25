@@ -112,7 +112,8 @@ Done.
 
 ## Serial Communication through UART
 
-*Ensure firmware has been uploaded to the QUTy board before reading this section.*
+{: .important }
+Ensure firmware has been uploaded to the QUTy board before reading this section.
 
 To allow serial communication between the QUTy board and the host
 machine:

@@ -21,10 +21,31 @@ markdown: kramdown
 kramdown:
   syntax_highlighter: none
 
+# Color scheme currently only supports "dark", "light"/nil (default), or a custom scheme that you define
+color_scheme: nil
+
+# When commented out, callouts_level defaults to quiet for the light scheme, and loud for dark
+# callouts_level: quiet # or loud
+callouts:
+  highlight:
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
+
 nav_external_links:
   - title: QUTy Schematic
     url: /assets/QUTy-V01_Schematic.pdf
-  - title: ATtiny1626 Data Sheet
+  - title: ATtiny1626 Datasheet
     url: https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATtiny1624-26-27-DataSheet-DS40002234B.pdf
   - title: AVR Instruction Set Manual
     url: https://ww1.microchip.com/downloads/en/DeviceDoc/AVR-InstructionSet-Manual-DS40002198.pdf

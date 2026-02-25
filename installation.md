@@ -22,18 +22,17 @@ which is available for Windows, macOS, and Linux.
 
 ## Prerequisites
 
-1. Install the [Git client](https://git-scm.com/) on your system.
-   For Windows users using an installer, the default installation
-   options may be used.
+1. Install the [Git client](https://git-scm.com/) on your system. The 
+   default installation options may be used.
 2. Install [Visual Studio Code](https://code.visualstudio.com/download).
 3. Install the [PlatformIO IDE extension](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide) for VSCode.
 
-{: .note-title}
+{: .note-title }
 > Windows Users
 >
 > Install the [Silicon Labs CP210x Virtual COM Port (VCP) drivers](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) 
-> to enable communication with the QUTy. Select "CP210x VCP Windows"
-> for executable installation.
+> to enable communication with the QUTy. When downloading, select
+> "CP210x VCP Windows" for an executable installer.
 
 ## Installing the QUTy Platform
 
@@ -48,10 +47,11 @@ which is available for Windows, macOS, and Linux.
 
    ![QUTy platform installation dialog box](/assets/images/platform-install-dialog.png)
 
+   {: .note }
    If VSCode was running during the installation of Git, you may need
    to restart VSCode first.
 
-## Verifying Installation
+## Verifying QUTy Platform Installation
 
 To verify that the QUTy platform has been installed correctly, navigate
 to **Platforms** and ensure that the QUTy platform is listed.
@@ -64,6 +64,7 @@ To verify that the QUTy board is able to interface with a host machine,
 navigate to the PlatformIO Devices tab, and connect the device using a
 USB cable. A new device should be listed.
 
+{: .note }
 The specific PORT name and description may vary depending on the host
 machine and the number of devices connected.
 
@@ -125,6 +126,9 @@ These options perform the following actions:
 2. **Upload** - Assembles/Compiles the project and uploads the firmware to the microcontroller.
 3. **Test** - Runs the test suite for the project (not available for the QUTy platform).
 4. **Clean** - Removes the compiled binaries from the `.pio` directory. This can be useful when debugging build issues.
+
+The above options are also displayed as icons in the status bar at the 
+bottom of VSCode.
 
 ---
 
