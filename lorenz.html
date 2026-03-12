@@ -1,0 +1,779 @@
+---
+layout: null
+permalink: /lorenz/
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lorenz System | EGB202</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap");
+
+      html {
+        font-size: 17px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #000;
+        overflow: hidden;
+        font-family: "Inter", sans-serif;
+        color: #fff;
+        user-select: none;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      /* Vignette */
+      #overlay::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 50%,
+          rgba(0, 0, 0, 0.6) 100%
+        );
+      }
+
+      /* Scanlines */
+      #overlay::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(0, 0, 0, 0.03) 4px
+        );
+      }
+
+      #title {
+        position: fixed;
+        top: 1.5rem;
+        left: 1.5rem;
+        z-index: 20;
+        pointer-events: none;
+      }
+
+      #title h1 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 0.25rem;
+      }
+
+      #title p {
+        font-size: 0.8rem;
+        font-weight: 300;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      #params {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 1.5rem;
+        z-index: 20;
+        font-size: 0.875rem;
+        font-weight: 300;
+        letter-spacing: 0.06em;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 2;
+      }
+
+      #params .section-label {
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        margin-top: 0.625rem;
+        margin-bottom: 0.125rem;
+      }
+
+      #params .section-label:first-child {
+        margin-top: 0;
+      }
+
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        height: 1.375rem;
+      }
+
+      .param-name {
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 400;
+        width: 1.375rem;
+        text-align: right;
+        margin-right: 0.375rem;
+        flex-shrink: 0;
+      }
+
+      .param-val {
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 400;
+        min-width: 3.5rem;
+        text-align: right;
+        cursor: ns-resize;
+        padding: 0 0.25rem;
+        border-radius: 0.125rem;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        font-variant-numeric: tabular-nums;
+        outline: none;
+      }
+
+      .param-val:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 1);
+      }
+
+      .param-val:focus {
+        cursor: text;
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 1);
+        outline: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .param-arrows {
+        display: flex;
+        flex-direction: column;
+        margin-left: 0.125rem;
+        gap: 0;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+
+      .param-row:hover .param-arrows {
+        opacity: 1;
+      }
+
+      .param-arrows button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.5rem;
+        cursor: pointer;
+        padding: 0 0.2rem;
+        line-height: 0.7rem;
+        font-family: inherit;
+        transition: color 0.1s;
+      }
+
+      .param-arrows button:hover {
+        color: rgba(255, 255, 255, 1);
+      }
+
+      #step-counter {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 20;
+        font-size: 0.8rem;
+        font-weight: 300;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.4);
+        pointer-events: none;
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+
+      #controls {
+        position: fixed;
+        bottom: 3.25rem;
+        right: 1.5rem;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        align-items: stretch;
+        width: 6.25rem;
+      }
+
+      .ctrl-btn {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.6);
+        font-family: "Inter", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.375em 0.625em;
+        border-radius: 0.2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .ctrl-btn:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        color: rgba(255, 255, 255, 1);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .ctrl-btn .hint {
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 0.75em;
+      }
+
+      .ctrl-btn.hidden {
+        display: none;
+      }
+
+      #pause-indicator {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0);
+        pointer-events: none;
+        z-index: 30;
+        transition: color 0.3s;
+      }
+
+      #pause-indicator.visible {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      #toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(0.5rem);
+        background: rgba(30, 30, 40, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.8rem;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        padding: 0.5em 1em;
+        border-radius: 0.35rem;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0;
+        transition:
+          opacity 0.25s,
+          transform 0.25s;
+      }
+
+      #toast.visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      #reset-btn {
+        margin-top: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overlay"></div>
+
+    <div id="title">
+      <h1>Lorenz System</h1>
+      <p>EGB202 Tutorial 6</p>
+    </div>
+
+    <div id="params"></div>
+    <div id="controls"></div>
+    <div id="step-counter"></div>
+    <div id="pause-indicator">Paused</div>
+    <div id="toast"></div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { Line2 } from "three/addons/lines/Line2.js";
+      import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+      import { LineGeometry } from "three/addons/lines/LineGeometry.js";
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const getInt = (key, def) => {
+        const v = urlParams.get(key);
+        return v !== null ? parseInt(v, 10) : def;
+      };
+
+      const SCALE = getInt("scale", 1024);
+      const TAIL_MAX = 30000;
+      const SIM_RATE = 2; // sim time units advanced per real second
+
+      const c1 = urlParams.get("c1") ? "#" + urlParams.get("c1") : "#0088ff";
+      const c2 = urlParams.get("c2") ? "#" + urlParams.get("c2") : "#ff2233";
+
+      const sim = {
+        sigma: getInt("sigma", 10240),
+        rho: getInt("rho", 28672),
+        beta: getInt("beta", 2731),
+        dt: getInt("dt", 1),
+        x0: getInt("x", 1024),
+        y0: getInt("y", 1024),
+        z0: getInt("z", 1024),
+        px0: getInt("px", 1025),
+        py0: getInt("py", 1025),
+        pz0: getInt("pz", 1025),
+      };
+
+      const worker = new Worker("/assets/js/lorenz-worker.js");
+
+      const buf1x = new Float32Array(TAIL_MAX);
+      const buf1y = new Float32Array(TAIL_MAX);
+      const buf1z = new Float32Array(TAIL_MAX);
+      const buf2x = new Float32Array(TAIL_MAX);
+      const buf2y = new Float32Array(TAIL_MAX);
+      const buf2z = new Float32Array(TAIL_MAX);
+      let bufHead = 0;
+      let bufCount = 0;
+      let totalSteps = 0;
+      let lastTime = 0;
+      let simTimeAccum = 0;
+      let workerBusy = false;
+
+      const toast = document.getElementById("toast");
+      let toastTimer = null;
+      function showToast(text) {
+        toast.textContent = text;
+        toast.classList.add("visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("visible"), 3000);
+      }
+
+      worker.onmessage = function (e) {
+        const msg = e.data;
+        if (msg.type !== "result") return;
+        workerBusy = false;
+        if (msg.didOverflow) {
+          if (!paused) togglePause();
+          showToast("State diverged — press R to reset");
+          return;
+        }
+        const { pts1, pts2, count } = msg;
+        for (let i = 0; i < count; i++) {
+          const o = i * 3;
+          buf1x[bufHead] = pts1[o];
+          buf1y[bufHead] = pts1[o + 1];
+          buf1z[bufHead] = pts1[o + 2];
+          buf2x[bufHead] = pts2[o];
+          buf2y[bufHead] = pts2[o + 1];
+          buf2z[bufHead] = pts2[o + 2];
+          bufHead = (bufHead + 1) % TAIL_MAX;
+          if (bufCount < TAIL_MAX) bufCount++;
+        }
+        totalSteps = msg.totalSteps;
+      };
+
+      function resetSim() {
+        bufHead = 0;
+        bufCount = 0;
+        totalSteps = 0;
+        simTimeAccum = 0;
+        lastTime = 0;
+        workerBusy = false;
+        worker.postMessage({ type: "reset" });
+      }
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x020208);
+      scene.fog = new THREE.FogExp2(0x020208, 0.0006);
+
+      const camera = new THREE.PerspectiveCamera(
+        80,
+        window.innerWidth / window.innerHeight,
+        0.001,
+        2000,
+      );
+      camera.position.set(0, 25, 45);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      document.body.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.03;
+      controls.minDistance = 0.001;
+      controls.maxDistance = 200;
+      controls.target.set(0, 25, 0);
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        trail1.material.resolution.set(window.innerWidth, window.innerHeight);
+        trail2.material.resolution.set(window.innerWidth, window.innerHeight);
+      });
+
+      function createTrail(color) {
+        const c = new THREE.Color(color);
+
+        const geometry = new LineGeometry();
+        geometry.setPositions(new Float32Array(TAIL_MAX * 3));
+        geometry.setColors(new Float32Array(TAIL_MAX * 3));
+
+        const material = new LineMaterial({
+          vertexColors: true,
+          linewidth: 1.5,
+          resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.CustomBlending,
+          blendEquation: THREE.MaxEquation,
+          blendSrc: THREE.OneFactor,
+          blendDst: THREE.OneFactor,
+        });
+
+        const line = new Line2(geometry, material);
+        line.frustumCulled = false;
+        scene.add(line);
+        return { geometry, material, color: c };
+      }
+
+      const trail1 = createTrail(c1);
+      const trail2 = createTrail(c2);
+      const trackers = [
+        { trail: trail1, bx: buf1x, by: buf1y, bz: buf1z },
+        { trail: trail2, bx: buf2x, by: buf2y, bz: buf2z },
+      ];
+
+      const paramDefs = [
+        { section: "Parameters" },
+        { key: "sigma", label: "σ", step: 0.5, dp: 1 },
+        { key: "rho", label: "ρ", step: 0.5, dp: 1 },
+        { key: "beta", label: "β", step: 0.1, dp: 3 },
+        { section: "Initial Condition 1" },
+        { key: "x0", label: "x", step: 0.1, dp: 3 },
+        { key: "y0", label: "y", step: 0.1, dp: 3 },
+        { key: "z0", label: "z", step: 0.1, dp: 3 },
+        { section: "Initial Condition 2" },
+        { key: "px0", label: "x", step: 0.001, dp: 3 },
+        { key: "py0", label: "y", step: 0.001, dp: 3 },
+        { key: "pz0", label: "z", step: 0.001, dp: 3 },
+        { section: "Solver Parameters" },
+        { key: "dt", label: "Δt", step: 0.001, dp: 3 },
+      ];
+
+      const uiVals = {};
+      const paramEls = {};
+      for (const def of paramDefs) {
+        if (def.key) uiVals[def.key] = sim[def.key] / SCALE;
+      }
+
+      function nudge(def, dir) {
+        uiVals[def.key] = parseFloat(
+          (uiVals[def.key] + def.step * dir).toFixed(def.dp + 2),
+        );
+        sim[def.key] = Math.round(uiVals[def.key] * SCALE);
+        paramEls[def.key].textContent = uiVals[def.key].toFixed(def.dp);
+        worker.postMessage({
+          type: "setParam",
+          key: def.key,
+          value: sim[def.key],
+        });
+      }
+
+      const paramsContainer = document.getElementById("params");
+      for (const def of paramDefs) {
+        if (def.section) {
+          const label = document.createElement("div");
+          label.className = "section-label";
+          label.textContent = def.section;
+          paramsContainer.appendChild(label);
+          continue;
+        }
+
+        const row = document.createElement("div");
+        row.className = "param-row";
+        const name = document.createElement("span");
+        name.className = "param-name";
+        name.textContent = def.label;
+        const val = document.createElement("span");
+        val.className = "param-val";
+        val.contentEditable = "true";
+        val.spellcheck = false;
+        val.textContent = uiVals[def.key].toFixed(def.dp);
+        paramEls[def.key] = val;
+
+        function commitVal() {
+          const parsed = parseFloat(val.textContent);
+          if (!isNaN(parsed)) {
+            uiVals[def.key] = parsed;
+            sim[def.key] = Math.round(parsed * SCALE);
+            worker.postMessage({
+              type: "setParam",
+              key: def.key,
+              value: sim[def.key],
+            });
+          }
+          val.textContent = uiVals[def.key].toFixed(def.dp);
+        }
+
+        val.addEventListener("blur", commitVal);
+        val.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            val.blur();
+          }
+          if (e.key === "Escape") {
+            val.textContent = uiVals[def.key].toFixed(def.dp);
+            val.blur();
+          }
+        });
+
+        val.addEventListener(
+          "wheel",
+          (e) => {
+            e.preventDefault();
+            nudge(def, e.deltaY < 0 ? 1 : -1);
+          },
+          { passive: false },
+        );
+
+        const arrows = document.createElement("span");
+        arrows.className = "param-arrows";
+        const up = document.createElement("button");
+        up.textContent = "▲";
+        up.addEventListener("click", (e) => {
+          e.stopPropagation();
+          nudge(def, 1);
+        });
+        const dn = document.createElement("button");
+        dn.textContent = "▼";
+        dn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          nudge(def, -1);
+        });
+        arrows.append(up, dn);
+        row.append(name, val, arrows);
+        paramsContainer.appendChild(row);
+      }
+
+      const resetBtn = document.createElement("button");
+      resetBtn.id = "reset-btn";
+      resetBtn.className = "ctrl-btn";
+      resetBtn.innerHTML = 'Reset<span class="hint">R</span>';
+      resetBtn.addEventListener("click", () => resetSim());
+      paramsContainer.appendChild(resetBtn);
+
+      let paused = false;
+      const pauseIndicator = document.getElementById("pause-indicator");
+      const controlsDiv = document.getElementById("controls");
+      const stepCounter = document.getElementById("step-counter");
+
+      function togglePause() {
+        paused = !paused;
+        pauseIndicator.classList.toggle("visible", paused);
+        screenshotBtn.classList.toggle("hidden", !paused);
+        stepBtn.classList.toggle("hidden", !paused);
+        pauseBtn.innerHTML = paused
+          ? 'play<span class="hint">SP</span>'
+          : 'pause<span class="hint">SP</span>';
+        if (!paused) lastTime = 0;
+      }
+
+      function singleStep() {
+        if (!paused || workerBusy) return;
+        workerBusy = true;
+        worker.postMessage({ type: "step", count: 1 });
+      }
+
+      function screenshot() {
+        const outW = 3840;
+        const outH = 2160;
+        const ssW = outW * 2;
+        const ssH = outH * 2;
+
+        const rt = new THREE.WebGLRenderTarget(ssW, ssH, { samples: 8 });
+        rt.texture.colorSpace = THREE.SRGBColorSpace;
+
+        const prevAspect = camera.aspect;
+        camera.aspect = ssW / ssH;
+        camera.updateProjectionMatrix();
+        trail1.material.resolution.set(ssW, ssH);
+        trail2.material.resolution.set(ssW, ssH);
+
+        renderer.setRenderTarget(rt);
+        renderer.render(scene, camera);
+        renderer.setRenderTarget(null);
+
+        const pixels = new Uint8Array(ssW * ssH * 4);
+        renderer.readRenderTargetPixels(rt, 0, 0, ssW, ssH, pixels);
+        rt.dispose();
+
+        const fullCanvas = document.createElement("canvas");
+        fullCanvas.width = ssW;
+        fullCanvas.height = ssH;
+        const fullCtx = fullCanvas.getContext("2d");
+        const imageData = fullCtx.createImageData(ssW, ssH);
+        for (let y = 0; y < ssH; y++) {
+          const src = (ssH - 1 - y) * ssW * 4;
+          imageData.data.set(pixels.subarray(src, src + ssW * 4), y * ssW * 4);
+        }
+        fullCtx.putImageData(imageData, 0, 0);
+
+        const outCanvas = document.createElement("canvas");
+        outCanvas.width = outW;
+        outCanvas.height = outH;
+        outCanvas.getContext("2d").drawImage(fullCanvas, 0, 0, outW, outH);
+
+        camera.aspect = prevAspect;
+        camera.updateProjectionMatrix();
+        trail1.material.resolution.set(window.innerWidth, window.innerHeight);
+        trail2.material.resolution.set(window.innerWidth, window.innerHeight);
+
+        const link = document.createElement("a");
+        link.download = "lorenz.png";
+        link.href = outCanvas.toDataURL("image/png");
+        link.click();
+      }
+
+      const screenshotBtn = document.createElement("button");
+      screenshotBtn.className = "ctrl-btn hidden";
+      screenshotBtn.innerHTML = 'save<span class="hint">S</span>';
+      screenshotBtn.addEventListener("click", () => screenshot());
+
+      const stepBtn = document.createElement("button");
+      stepBtn.className = "ctrl-btn hidden";
+      stepBtn.innerHTML = 'step<span class="hint">→</span>';
+      stepBtn.addEventListener("click", singleStep);
+
+      const pauseBtn = document.createElement("button");
+      pauseBtn.className = "ctrl-btn";
+      pauseBtn.innerHTML = 'pause<span class="hint">SP</span>';
+      pauseBtn.addEventListener("click", togglePause);
+
+      controlsDiv.append(screenshotBtn, stepBtn, pauseBtn);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "r" || e.key === "R") resetSim();
+        if (e.key === " ") {
+          e.preventDefault();
+          togglePause();
+        }
+        if (e.key === "ArrowRight" && paused) singleStep();
+      });
+
+      worker.postMessage({ type: "init", sim: { ...sim }, SCALE });
+      resetSim();
+
+      function animate(now) {
+        requestAnimationFrame(animate);
+
+        if (!paused) {
+          if (lastTime === 0) lastTime = now;
+          const realDelta = Math.min((now - lastTime) / 1000, 0.05);
+          lastTime = now;
+
+          const dtPhysical = sim.dt / SCALE;
+          if (dtPhysical > 0) {
+            simTimeAccum += realDelta * SIM_RATE;
+            // Cap accumulator so we don't build up debt while worker is busy
+            simTimeAccum = Math.min(simTimeAccum, 0.5);
+            if (!workerBusy) {
+              const stepsNeeded = Math.floor(simTimeAccum / dtPhysical);
+              if (stepsNeeded > 0) {
+                simTimeAccum -= stepsNeeded * dtPhysical;
+                workerBusy = true;
+                worker.postMessage({ type: "step", count: stepsNeeded });
+              }
+            }
+          }
+        }
+
+        const segCount = Math.max(0, bufCount - 1);
+        for (const { trail, bx, by, bz } of trackers) {
+          const { geometry, color } = trail;
+
+          if (segCount > 0) {
+            const posData = geometry.attributes.instanceStart.data.array;
+            const colData = geometry.attributes.instanceColorStart.data.array;
+
+            for (let i = 0; i < segCount; i++) {
+              const ai = (bufHead - bufCount + i + TAIL_MAX) % TAIL_MAX;
+              const bi = (bufHead - bufCount + i + 1 + TAIL_MAX) % TAIL_MAX;
+              const fa = Math.sqrt(i / bufCount) * 0.9;
+              const fb = Math.sqrt((i + 1) / bufCount) * 0.9;
+              const base = i * 6;
+              posData[base] = bx[ai];
+              posData[base + 1] = by[ai];
+              posData[base + 2] = bz[ai];
+              posData[base + 3] = bx[bi];
+              posData[base + 4] = by[bi];
+              posData[base + 5] = bz[bi];
+              colData[base] = color.r * fa;
+              colData[base + 1] = color.g * fa;
+              colData[base + 2] = color.b * fa;
+              colData[base + 3] = color.r * fb;
+              colData[base + 4] = color.g * fb;
+              colData[base + 5] = color.b * fb;
+            }
+
+            geometry.attributes.instanceStart.data.needsUpdate = true;
+            geometry.attributes.instanceColorStart.data.needsUpdate = true;
+          }
+
+          geometry.instanceCount = segCount;
+        }
+
+        stepCounter.textContent = totalSteps.toLocaleString();
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
