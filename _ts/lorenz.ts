@@ -24,6 +24,7 @@ type WorkerResult = {
   count: number;
   steps: number;
   didOverflow: boolean;
+  didConverge: boolean;
 };
 
 type SectionDef = { section: string };
@@ -114,6 +115,12 @@ worker.onmessage = function (e: MessageEvent<WorkerResult>) {
     if (bufCount < TAIL_MAX) bufCount++;
   }
   stepCount = msg.steps;
+  if (msg.didConverge) {
+    if (!paused) togglePause();
+    frozen = true;
+    showToast("Converged to equilibrium point — press R to reset");
+    return;
+  }
   geometryDirty = true;
 };
 

@@ -63,19 +63,32 @@ function stepSim(x: number, y: number, z: number): [number, number, number, bool
   const clampedY = BigInt.asIntN(32, nextY);
   const clampedZ = BigInt.asIntN(32, nextZ);
 
-  const outX = Number(clampedX);
-  const outY = Number(clampedY);
-  const outZ = Number(clampedZ);
+  const diverged = nextX !== clampedX || nextY !== clampedY || nextZ !== clampedZ;
 
-  const diverged =
-    nextX !== clampedX ||
-    nextY !== clampedY ||
-    nextZ !== clampedZ ||
-    Math.abs(outX) > SCALE * 200 ||
-    Math.abs(outY) > SCALE * 200 ||
-    Math.abs(outZ) > SCALE * 200;
+  return [Number(clampedX), Number(clampedY), Number(clampedZ), diverged];
+}
 
-  return [outX, outY, outZ, diverged];
+function fixedPoints(): [number, number, number][] {
+  const pts: [number, number, number][] = [[0, 0, 0]];
+  if (sim.beta > 0 && sim.rho > SCALE) {
+    const xy = Math.round(Math.sqrt(sim.beta * (sim.rho - SCALE)));
+    const z = sim.rho - SCALE;
+    pts.push([-xy, -xy, z]);
+    pts.push([xy, xy, z]);
+  }
+  return pts;
+}
+
+function isNearFixedPoint(x: number, y: number, z: number): boolean {
+  const threshold = 0.5;
+  const thresholdSquared = threshold * threshold;
+  for (const [fx, fy, fz] of fixedPoints()) {
+    const dx = (x - fx) / SCALE;
+    const dy = (y - fy) / SCALE;
+    const dz = (z - fz) / SCALE;
+    if (dx * dx + dy * dy + dz * dz <= thresholdSquared) return true;
+  }
+  return false;
 }
 
 self.onmessage = function (e: MessageEvent<WorkerMessage>) {
@@ -96,6 +109,7 @@ self.onmessage = function (e: MessageEvent<WorkerMessage>) {
     const traj2 = new Float64Array(count * 3);
 
     let diverged = false;
+    let converged = false;
     let pointCount = 0;
 
     for (let n = 0; n < count; n++) {
@@ -117,6 +131,11 @@ self.onmessage = function (e: MessageEvent<WorkerMessage>) {
 
       pointCount++;
       stepCount++;
+
+      if (isNearFixedPoint(x1, y1, z1) || isNearFixedPoint(x2, y2, z2)) {
+        converged = true;
+        break;
+      }
     }
 
     self.postMessage(
@@ -127,6 +146,7 @@ self.onmessage = function (e: MessageEvent<WorkerMessage>) {
         count: pointCount,
         steps: stepCount,
         didOverflow: diverged,
+        didConverge: converged,
       },
       [traj1.buffer, traj2.buffer],
     );
