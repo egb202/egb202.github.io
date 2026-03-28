@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "build:ts": "esbuild _ts/lorenz.ts _ts/lorenz-worker.ts --bundle=false --minify --outdir=assets/js",
+    "watch:ts": "esbuild _ts/lorenz.ts _ts/lorenz-worker.ts --bundle=false --outdir=assets/js --watch",
+    "typecheck": "tsc --noEmit && tsc -p _ts/tsconfig.json --noEmit",
+    "format": "prettier --write _ts"
+  },
+  "devDependencies": {
+    "@types/three": "^0.183.1",
+    "esbuild": "^0.27.4",
+    "prettier": "^3.8.1",
+    "three": "^0.183.2",
+    "typescript": "^6.0.2"
+  }
+}
