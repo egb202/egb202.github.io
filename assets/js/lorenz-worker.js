@@ -50,7 +50,14 @@ self.onmessage = function (e) {
     let didOverflow = false;
     let written = 0;
     for (let n = 0; n < count; n++) {
-      if (Math.abs(s1x) > 1e9 || Math.abs(s2x) > 1e9) {
+      if (
+        Math.abs(s1x) > 1000 * SCALE ||
+        Math.abs(s2x) > 1000 * SCALE ||
+        Math.abs(s1y) > 1000 * SCALE ||
+        Math.abs(s2y) > 1000 * SCALE ||
+        Math.abs(s1z) > 1000 * SCALE ||
+        Math.abs(s2z) > 1000 * SCALE
+      ) {
         didOverflow = true;
         break;
       }
