@@ -52,11 +52,7 @@ permalink: /lorenz/
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(
-          ellipse at center,
-          transparent 50%,
-          rgba(0, 0, 0, 0.6) 100%
-        );
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
       }
 
       /* Scanlines */
@@ -243,15 +239,20 @@ permalink: /lorenz/
         align-items: center;
       }
 
+      .ctrl-btn .hint {
+        font-size: 0.65rem;
+        opacity: 0.45;
+        letter-spacing: 0.05em;
+      }
+
+      .ctrl-btn:hover .hint {
+        opacity: 0.7;
+      }
+
       .ctrl-btn:hover {
         border-color: rgba(255, 255, 255, 0.5);
         color: rgba(255, 255, 255, 1);
         background: rgba(255, 255, 255, 0.06);
-      }
-
-      .ctrl-btn .hint {
-        color: rgba(255, 255, 255, 0.3);
-        font-size: 0.75em;
       }
 
       .ctrl-btn.hidden {
@@ -305,6 +306,57 @@ permalink: /lorenz/
 
       #reset-btn {
         margin-top: 0.875rem;
+      }
+
+      @media (max-width: 640px) {
+        html {
+          font-size: 13px;
+        }
+
+        #title {
+          top: 1rem;
+          left: 1rem;
+        }
+
+        #title h1 {
+          font-size: 0.95rem;
+        }
+
+        #params {
+          bottom: 1rem;
+          left: 1rem;
+          font-size: 0.75rem;
+          line-height: 1.6;
+          max-height: 55vh;
+          overflow-y: auto;
+        }
+
+        .param-row {
+          height: 1.25rem;
+        }
+
+        .param-arrows {
+          opacity: 1;
+        }
+
+        #controls {
+          bottom: 3.25rem;
+          right: 1rem;
+          width: 5rem;
+        }
+
+        .ctrl-btn .hint {
+          display: none;
+        }
+
+        .ctrl-btn {
+          justify-content: center;
+        }
+
+        #step-counter {
+          bottom: 1rem;
+          right: 1rem;
+        }
       }
     </style>
   </head>
