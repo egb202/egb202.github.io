@@ -30,14 +30,12 @@ let bigSigma: bigint;
 let bigRho: bigint;
 let bigBeta: bigint;
 let bigDt: bigint;
-let bigScale: bigint;
 
 function cacheParameters(): void {
   bigSigma = BigInt(sim.sigma);
   bigRho = BigInt(sim.rho);
   bigBeta = BigInt(sim.beta);
   bigDt = BigInt(sim.dt);
-  bigScale = BigInt(SCALE);
 }
 
 function resetState(): void {
@@ -63,21 +61,25 @@ function stepSim(x: number, y: number, z: number): [number, number, number, bool
   const by = BigInt(y);
   const bz = BigInt(z);
 
-  const dx = (bigSigma * (by - bx) * bigDt) / bigScale / bigScale;
-  const dy = (((bx * (bigRho - bz)) / bigScale - by) * bigDt) / bigScale;
-  const dz = (((bx * by) / bigScale - (bigBeta * bz) / bigScale) * bigDt) / bigScale;
+  const dxdt = (bigSigma * (by - bx)) >> 10n;
+  const dydt = ((bx * (bigRho - bz)) >> 10n) - by;
+  const dzdt = (bx * by - bigBeta * bz) >> 10n;
 
-  const nextX = bx + dx;
-  const nextY = by + dy;
-  const nextZ = bz + dz;
+  const dx = (dxdt * bigDt) >> 10n;
+  const dy = (dydt * bigDt) >> 10n;
+  const dz = (dzdt * bigDt) >> 10n;
 
-  const clampedX = BigInt.asIntN(32, nextX);
-  const clampedY = BigInt.asIntN(32, nextY);
-  const clampedZ = BigInt.asIntN(32, nextZ);
+  const overflow =
+    dx < -2147483648n || dx > 2147483647n ||
+    dy < -2147483648n || dy > 2147483647n ||
+    dz < -2147483648n || dz > 2147483647n;
 
-  const diverged = nextX !== clampedX || nextY !== clampedY || nextZ !== clampedZ;
-
-  return [Number(clampedX), Number(clampedY), Number(clampedZ), diverged];
+  return [
+    Number(BigInt.asIntN(32, bx + dx)),
+    Number(BigInt.asIntN(32, by + dy)),
+    Number(BigInt.asIntN(32, bz + dz)),
+    overflow,
+  ];
 }
 
 function reachedEquilibrium(
