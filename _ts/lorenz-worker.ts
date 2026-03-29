@@ -21,6 +21,10 @@ let sim: SimParams = {} as SimParams;
 let SCALE = 1024;
 let x1: number, y1: number, z1: number;
 let x2: number, y2: number, z2: number;
+let px1: number, py1: number, pz1: number;
+let px2: number, py2: number, pz2: number;
+let converged1 = false;
+let converged2 = false;
 let stepCount: number;
 let bigSigma: bigint;
 let bigRho: bigint;
@@ -43,6 +47,14 @@ function resetState(): void {
   x2 = sim.px0;
   y2 = sim.py0;
   z2 = sim.pz0;
+  px1 = x1;
+  py1 = y1;
+  pz1 = z1;
+  px2 = x2;
+  py2 = y2;
+  pz2 = z2;
+  converged1 = false;
+  converged2 = false;
   stepCount = 0;
 }
 
@@ -68,25 +80,17 @@ function stepSim(x: number, y: number, z: number): [number, number, number, bool
   return [Number(clampedX), Number(clampedY), Number(clampedZ), diverged];
 }
 
-function fixedPoints(): [number, number, number][] {
-  const pts: [number, number, number][] = [[0, 0, 0]];
-  if (sim.beta > 0 && sim.rho > SCALE) {
-    const xy = Math.round(Math.sqrt(sim.beta * (sim.rho - SCALE)));
-    const z = sim.rho - SCALE;
-    pts.push([-xy, -xy, z]);
-    pts.push([xy, xy, z]);
-  }
-  return pts;
-}
-
-function isNearFixedPoint(x: number, y: number, z: number): boolean {
-  const threshold = 0.5;
-  const thresholdSquared = threshold * threshold;
-  for (const [fx, fy, fz] of fixedPoints()) {
-    const dx = (x - fx) / SCALE;
-    const dy = (y - fy) / SCALE;
-    const dz = (z - fz) / SCALE;
-    if (dx * dx + dy * dy + dz * dz <= thresholdSquared) return true;
+function reachedEquilibrium(
+  x1: number,
+  y1: number,
+  z1: number,
+  x2: number,
+  y2: number,
+  z2: number,
+): boolean {
+  if (x1 === x2 && y1 === y2 && z1 === z2) {
+    console.log(`[lorenz] frozen at (${x1}, ${y1}, ${z1})`);
+    return true;
   }
   return false;
 }
@@ -109,33 +113,43 @@ self.onmessage = function (e: MessageEvent<WorkerMessage>) {
     const traj2 = new Float64Array(count * 3);
 
     let diverged = false;
-    let converged = false;
     let pointCount = 0;
 
     for (let n = 0; n < count; n++) {
-      [x1, y1, z1, diverged] = stepSim(x1, y1, z1);
-      if (diverged) break;
-
-      [x2, y2, z2, diverged] = stepSim(x2, y2, z2);
-      if (diverged) break;
-
       const offset = pointCount * 3;
 
       // world coords: sim-x -> x, sim-z -> y, sim-y -> z
-      traj1[offset] = x1 / SCALE;
-      traj1[offset + 1] = z1 / SCALE;
-      traj1[offset + 2] = y1 / SCALE;
-      traj2[offset] = x2 / SCALE;
-      traj2[offset + 1] = z2 / SCALE;
-      traj2[offset + 2] = y2 / SCALE;
+
+      if (!converged1) {
+        [x1, y1, z1, diverged] = stepSim(x1, y1, z1);
+        if (diverged) break;
+        if (reachedEquilibrium(x1, y1, z1, px1, py1, pz1)) converged1 = true;
+        px1 = x1;
+        py1 = y1;
+        pz1 = z1;
+
+        traj1[offset] = x1 / SCALE;
+        traj1[offset + 1] = z1 / SCALE;
+        traj1[offset + 2] = y1 / SCALE;
+      }
+
+      if (!converged2) {
+        [x2, y2, z2, diverged] = stepSim(x2, y2, z2);
+        if (diverged) break;
+        if (reachedEquilibrium(x2, y2, z2, px2, py2, pz2)) converged2 = true;
+        px2 = x2;
+        py2 = y2;
+        pz2 = z2;
+
+        traj2[offset] = x2 / SCALE;
+        traj2[offset + 1] = z2 / SCALE;
+        traj2[offset + 2] = y2 / SCALE;
+      }
 
       pointCount++;
       stepCount++;
 
-      if (isNearFixedPoint(x1, y1, z1) || isNearFixedPoint(x2, y2, z2)) {
-        converged = true;
-        break;
-      }
+      if (converged1 && converged2) break;
     }
 
     self.postMessage(
@@ -146,7 +160,9 @@ self.onmessage = function (e: MessageEvent<WorkerMessage>) {
         count: pointCount,
         steps: stepCount,
         didOverflow: diverged,
-        didConverge: converged,
+        didConverge: converged1 && converged2,
+        didConverge1: converged1,
+        didConverge2: converged2,
       },
       [traj1.buffer, traj2.buffer],
     );

@@ -25,6 +25,8 @@ type WorkerResult = {
   steps: number;
   didOverflow: boolean;
   didConverge: boolean;
+  didConverge1: boolean;
+  didConverge2: boolean;
 };
 
 type SectionDef = { section: string };
@@ -82,6 +84,8 @@ let simTimeAccum = 0;
 let workerBusy = false;
 let geometryDirty = false;
 let frozen = false;
+let shownConverge1 = false;
+let shownConverge2 = false;
 
 const toast = document.getElementById("toast")!;
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
@@ -115,10 +119,18 @@ worker.onmessage = function (e: MessageEvent<WorkerResult>) {
     if (bufCount < TAIL_MAX) bufCount++;
   }
   stepCount = msg.steps;
+  if (msg.didConverge1 && !shownConverge1) {
+    shownConverge1 = true;
+    showToast("Trajectory 1 converged to equilibrium point");
+  }
+  if (msg.didConverge2 && !shownConverge2) {
+    shownConverge2 = true;
+    showToast("Trajectory 2 converged to equilibrium point");
+  }
   if (msg.didConverge) {
     if (!paused) togglePause();
     frozen = true;
-    showToast("Converged to equilibrium point — press R to reset");
+    showToast("Both trajectories converged — press R to reset");
     return;
   }
   geometryDirty = true;
@@ -133,6 +145,8 @@ function resetSim(): void {
   lastFrameTime = 0;
   workerBusy = false;
   frozen = false;
+  shownConverge1 = false;
+  shownConverge2 = false;
   worker.postMessage({ type: "reset" });
 }
 
@@ -157,6 +171,9 @@ orbitControls.dampingFactor = 0.03;
 orbitControls.minDistance = 0.001;
 orbitControls.maxDistance = 200;
 orbitControls.target.set(0, 25, 0);
+
+let needsRender = true;
+orbitControls.addEventListener("change", () => { needsRender = true; });
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -336,7 +353,7 @@ function togglePause(): void {
   pauseBtn.innerHTML = paused
     ? 'play<span class="hint">SP</span>'
     : 'pause<span class="hint">SP</span>';
-  if (!paused) lastFrameTime = 0;
+  if (!paused) { lastFrameTime = 0; needsRender = true; }
 }
 
 function singleStep(): void {
@@ -485,11 +502,15 @@ function animate(now: number): void {
 
       geometry.instanceCount = segCount;
     }
+    needsRender = true;
   }
 
   stepCounter.textContent = stepCount.toLocaleString();
   orbitControls.update();
-  renderer.render(scene, camera);
+  if (!frozen || needsRender) {
+    needsRender = false;
+    renderer.render(scene, camera);
+  }
 }
 
 requestAnimationFrame(animate);
