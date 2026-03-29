@@ -88,11 +88,7 @@ function reachedEquilibrium(
   y2: number,
   z2: number,
 ): boolean {
-  if (x1 === x2 && y1 === y2 && z1 === z2) {
-    console.log(`[lorenz] frozen at (${x1}, ${y1}, ${z1})`);
-    return true;
-  }
-  return false;
+  return x1 === x2 && y1 === y2 && z1 === z2;
 }
 
 self.onmessage = function (e: MessageEvent<WorkerMessage>) {
